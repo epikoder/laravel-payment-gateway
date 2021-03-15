@@ -1,0 +1,14 @@
+{
+    "name": "epikoder/laravel-payment-gateway",
+    "description": "Extendable payment gateway to manage different gateways in your application",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "epikoder",
+            "email": "efedua.bell@gmail.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {}
+}
