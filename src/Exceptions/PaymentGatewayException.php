@@ -1,5 +1,5 @@
 <?php
-namespace Epikoder\LaravelPaymentGateway\Exception;
+namespace Epikoder\LaravelPaymentGateway\Exceptions;
 
 class PaymentGatewayException extends \Exception
 {

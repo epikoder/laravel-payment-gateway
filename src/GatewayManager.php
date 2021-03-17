@@ -6,7 +6,7 @@ use Epikoder\LaravelPaymentGateway\Abstracts\PaymentProvider;
 use Epikoder\LaravelPaymentGateway\Contracts\PaymentGatewayInterface;
 use Illuminate\Contracts\Foundation\Application;
 
-class PaymentGatewayManager
+class GatewayManager
 {
     /**
      * @var PaymentGatewayInterface
