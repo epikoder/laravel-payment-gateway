@@ -5,7 +5,7 @@ use Epikoder\LaravelPaymentGateway\Classes\BasePaymentGateway;
 use Epikoder\LaravelPaymentGateway\Contracts\PaymentGatewayInterface;
 use Illuminate\Support\ServiceProvider;
 
-class GatewayServiceProvider extends  ServiceProvider
+class PaymentServiceProvider extends  ServiceProvider
 {
     public function boot()
     {
@@ -18,6 +18,6 @@ class GatewayServiceProvider extends  ServiceProvider
 
     public function register()
     {
-        $this->app->singleton(PaymentGatewayInterface::class, BasePaymentGateway::class);
+        $this->app->bind(PaymentGatewayInterface::class, BasePaymentGateway::class);
     }
 }

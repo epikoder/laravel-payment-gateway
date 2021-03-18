@@ -4,9 +4,10 @@ namespace Epikoder\LaravelPaymentGateway;
 
 use Epikoder\LaravelPaymentGateway\Abstracts\PaymentProvider;
 use Epikoder\LaravelPaymentGateway\Contracts\PaymentGatewayInterface;
+use Epikoder\LaravelPaymentGateway\Exceptions\PaymentGatewayException;
 use Illuminate\Contracts\Foundation\Application;
 
-class GatewayManager
+class PaymentService
 {
     /**
      * @var PaymentGatewayInterface
@@ -21,8 +22,8 @@ class GatewayManager
     /** @var array */
     protected $allProviders = [];
 
-    /** @var array  */
-    protected $disabled;
+    /** @var \App\Models\User */
+    private $user;
 
     /**
      * Register the payment providers and get available options
@@ -32,18 +33,16 @@ class GatewayManager
         /** @var PaymentGatewayInterface $gateway */
         $this->gateway = $application->get(PaymentGatewayInterface::class);
 
-        $this->disabled = config("gateway.disabled");
         foreach (config('gateway.providers') as $key => $class) {
 
             /** @var PaymentProvider $provider */
             $provider = new $class;
             $this->gateway->registerProvider($provider);
-            if (!in_array($provider->identifier(), $this->disabled)) {
-                $this->providers[$provider->identifier()] = $provider->name();
+            if (!in_array($provider->identifier(), config("gateway.disabled"))) {
+                $this->providers[$provider->identifier()] = ['name' => $provider->name(), 'logo' => $provider->logoUrl()];
             }
             $this->allProviders[$provider->identifier()] = $provider->name();
         }
-        //SetupPaymentGateway::dispatch($this); -> if using persistent settings / save gateways to db
     }
 
     public function gateway(): PaymentGatewayInterface
@@ -64,8 +63,19 @@ class GatewayManager
         return $this->allProviders;
     }
 
-    public function useProvider(string $string): PaymentProvider
+    public function init(string $paymentMethod, array $data)
     {
-        return $this->gateway()->setActiveProvider($string);
+        $this->gateway->init($paymentMethod, $data);
+        return $this;
+    }
+
+    public function process($order)
+    {
+        try {
+            $result = $this->gateway->process($order);
+        } catch (\Throwable $e) {
+            $result = new PaymentResult($this->gateway->activeProvider(), $order);
+            $result;
+        }
     }
 }

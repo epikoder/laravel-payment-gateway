@@ -2,22 +2,22 @@
 
 namespace Epikoder\LaravelPaymentGateway\Contracts;
 
-use Epikoder\LaravelPaymentGateway\Abstracts\PaymentOrder;
 use Epikoder\LaravelPaymentGateway\Abstracts\PaymentProvider;
-use Epikoder\LaravelPaymentGateway\Abstracts\PaymentProviderResponse;
+use Epikoder\LaravelPaymentGateway\PaymentResult;
 
 interface PaymentGatewayInterface
 {
-
     /**
      * Register available providers
      */
     public function registerProvider(PaymentProvider $paymentProvider): PaymentProvider;
 
+    public function init(string $paymentProvider, array $data);
+
     /**
      * Process the payment
      */
-    public function process(PaymentOrder $order): PaymentProviderResponse;
+    public function process($order): PaymentResult;
 
     /**
      * Get specific provider
@@ -37,5 +37,5 @@ interface PaymentGatewayInterface
     /**
      * Set the provider to use
      */
-    public function setActiveProvider(string $id): PaymentProvider;
+    public function setActiveProvider(string $id);
 }

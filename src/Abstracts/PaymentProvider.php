@@ -2,12 +2,12 @@
 
 namespace Epikoder\LaravelPaymentGateway\Abstracts;
 
-use Epikoder\LaravelPaymentGateway\Abstracts\PaymentProviderResponse;
+use Epikoder\LaravelPaymentGateway\Contracts\PaymentOrder;
+use Epikoder\LaravelPaymentGateway\PaymentResult;
 use Illuminate\Validation\ValidationException;
 
 abstract class PaymentProvider
 {
-
     /**
      * Order been paid for
      * @var PaymentOrder
@@ -20,11 +20,8 @@ abstract class PaymentProvider
      */
     protected $data;
 
-    protected $settings = [];
-
-    public function __construct(PaymentOrder $order = null, array $data = null)
+    public function __construct($order = null, array $data = null)
     {
-        $this->settings = config("gateway.settings.{$this->identifier()}");
         $this->order = $order ?: null;
         $this->data = $data ?: null;
     }
@@ -40,30 +37,19 @@ abstract class PaymentProvider
     abstract public function identifier(): string;
 
     /**
+     * Get provider logo url
+     */
+    abstract public function logoUrl() : string;
+
+    /**
      * Get provider settings
      */
     public function settings(): array
     {
-        return $this->settings;
-    }
-
-    /**
-     * Update provider settings
-     */
-    public function updateSettings(array $settings): PaymentProvider
-    {
-        foreach ($settings as $key => $value) {
-            if (array_key_exists($key, $this->settings)) {
-                config(["gateway.settings.{$this->identifier()}.{$key}" => $value]);
-            }
-        }
-
-        if (config('gateway.persistent_settings') === true) {
-            $Gsettings = \Illuminate\Support\Facades\DB::table(config('gateway.persistent_table'))->where("name", $this->identifier())->first();
-            $Gsettings->settings = json_encode($settings);
-            $Gsettings->save();
-            return $this;
-        }
+        $mode = config("gateway.settings.{$this->identifier()}.mode");
+        return $mode
+            ? config("gateway.settings.{$this->identifier()}.{$mode}}")
+            : config("gateway.settings.{$this->identifier()}");
     }
 
     /**
@@ -76,7 +62,7 @@ abstract class PaymentProvider
     /**
      * Process payment
      */
-    abstract public function process(PaymentProviderResponse $paymentResponse): PaymentProviderResponse;
+    abstract public function process(PaymentResult $paymentProviderResponse): PaymentResult;
 
     public function setData($data)
     {
@@ -84,7 +70,7 @@ abstract class PaymentProvider
         return $this;
     }
 
-    public function setProduct(PaymentOrder $order)
+    public function setOrder($order)
     {
         $this->order = $order;
         return $this;

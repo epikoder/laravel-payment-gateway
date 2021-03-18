@@ -1,15 +1,18 @@
 <?php
 
 return [
-    'providers' => [
-    ],
+    'providers' => [],
 
-    /**
-     * Settings for each available gateway
-     * name should be the the gateway identifier
+    /*
+    |-------------------------------------------------------------------
+    | Settings
+    |-------------------------------------------------------------------
+    | Provider related settings and keys
+    | key|identifier, value|value
      */
-    'settings' => [
-        'paystack' => [
+    "settings" => [
+        "paystack" => [
+            "mode" => "test",
             'live' => [
                 'sk_key' => 'sk_test_6f220edf6029757d56079cb33b047a15da7b3bfd',
                 'pk_key' => 'pk_test_e8d8ffad357f6e7958b799ef96fb97965b13b959',
@@ -21,9 +24,6 @@ return [
             'channels' => [
                 'card', 'bank'
             ],
-        ],
-        'stripe' => [
-            //
         ]
     ],
 
