@@ -1,6 +1,6 @@
 <?php
 
-namespace Epikoder\LaravelPaymentGateway;
+namespace Epikoder\LaravelPaymentGateway\Gateways;
 
 use Epikoder\LaravelPaymentGateway\Traits\Objectify;
 
@@ -31,7 +31,7 @@ class PaystackResponse
     {
         $this->createFromJson($json);
     }
-    
+
     function __toString(): string
     {
         return utf8_encode($this->data->status);

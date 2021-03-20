@@ -16,14 +16,14 @@ class Paystack extends PaymentProvider
         return 'paystack';
     }
 
-    public function logoUrl(): string
+    public function imageUrl(): string
     {
-        return config("gateway.settings.paystack.logo");
+        return config("gateway.settings.paystack.image");
     }
 
     public function validate(): bool
     {
-        return true;
+        return array_key_exists("email", $this->data);
     }
 
     public function process(PaymentResult $paymentProviderResponse): PaymentResult
@@ -31,7 +31,7 @@ class Paystack extends PaymentProvider
         $paystack = $this->initialize();
 
         try {
-            $tranx = $paystack->transaction->initialize([]);
+            $tranx = $paystack->transaction->initialize($this->generateData());
         } catch (\Throwable $th) {
             //throw $th;
         }
@@ -41,5 +41,10 @@ class Paystack extends PaymentProvider
     public function initialize() : \Yabacon\Paystack
     {
         return new \Yabacon\Paystack($this->settings()["sk_key"]);
+    }
+
+    public function generateData() : array
+    {
+
     }
 }

@@ -35,6 +35,11 @@ return [
     'disabled' => ['stripe',],
 
     /**
+     * Urls settings
+     */
+    "returnUrl" => "checkout/response",
+
+    /**
      * Save persistent changes to database
      */
     'persistent_settings' => true,

@@ -39,7 +39,7 @@ abstract class PaymentProvider
     /**
      * Get provider logo url
      */
-    abstract public function logoUrl() : string;
+    abstract public function imageUrl() : string;
 
     /**
      * Get provider settings
@@ -64,10 +64,36 @@ abstract class PaymentProvider
      */
     abstract public function process(PaymentResult $paymentProviderResponse): PaymentResult;
 
+    public function returnUrl()
+    {
+        return config("app.url") . config("gateway.returnUrl") . "?". http_build_query([
+            "return" => "return",
+            "payment_provider" => $this->identifier(),
+        ]);
+    }
+
+    public function cancelUrl()
+    {
+        return config("app.url") . config("gateway.returnUrl") . "?". http_build_query([
+            "return" => "cancel",
+            "payment_provider" => $this->identifier(),
+        ]);
+    }
+
+    public function data()
+    {
+        return $this->data;
+    }
+
     public function setData($data)
     {
         $this->data = $data;
         return $this;
+    }
+
+    public function order()
+    {
+        return $this->order();
     }
 
     public function setOrder($order)

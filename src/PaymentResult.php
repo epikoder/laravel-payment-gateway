@@ -53,5 +53,54 @@ class PaymentResult
         $this->order      = $order;
         $this->successful = false;
     }
-    
+
+    /**
+     * The payment was successful.
+     *
+     * The payment is logged, associated with the order
+     * and the order is marked as paid.
+     *
+     * @param array $data
+     * @param       $response
+     *
+     * @return PaymentResult
+     */
+    public function success(array $data, $response): self
+    {
+        $this->successful = true;
+        return $this;
+    }
+
+    /**
+     * The payment was not successful.
+     *
+     * The payment is logged, associated with the order
+     * and the order is marked as paid.
+     *
+     * @param array $data
+     * @param       $response
+     *
+     * @return PaymentResult
+     */
+    public function fail(array $data, $response): self
+    {
+        $this->successful = false;
+        return $this;
+    }
+
+    /**
+     * The payment was successful.
+     *
+     * The payment is logged, associated with the order
+     * and the order is marked as paid.
+     *
+     * @param array $data
+     * @param       $response
+     *
+     * @return PaymentResult
+     */
+    public function pending(array $data, $response): self
+    {
+        return $this;
+    }
 }

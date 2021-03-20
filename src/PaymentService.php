@@ -22,13 +22,12 @@ class PaymentService
     /** @var array */
     protected $allProviders = [];
 
-    /** @var \App\Models\User */
-    private $user;
+    protected $paymentRedirector;
 
     /**
      * Register the payment providers and get available options
      */
-    public function __construct(Application $application)
+    public function __construct(Application $application, PaymentRedirector $paymentRedirector)
     {
         /** @var PaymentGatewayInterface $gateway */
         $this->gateway = $application->get(PaymentGatewayInterface::class);
@@ -39,10 +38,12 @@ class PaymentService
             $provider = new $class;
             $this->gateway->registerProvider($provider);
             if (!in_array($provider->identifier(), config("gateway.disabled"))) {
-                $this->providers[$provider->identifier()] = ['name' => $provider->name(), 'logo' => $provider->logoUrl()];
+                $this->providers[$provider->identifier()] = ['name' => $provider->name(), 'image' => $provider->imageUrl()];
             }
             $this->allProviders[$provider->identifier()] = $provider->name();
         }
+
+        $this->paymentRedirector = $paymentRedirector;
     }
 
     public function gateway(): PaymentGatewayInterface
@@ -75,7 +76,9 @@ class PaymentService
             $result = $this->gateway->process($order);
         } catch (\Throwable $e) {
             $result = new PaymentResult($this->gateway->activeProvider(), $order);
-            $result;
+            return $result->fail($this->gateway->activeProvider()->data(), $e);
         }
+
+        return $this->paymentRedirector->handlePaymentResult($result);
     }
 }

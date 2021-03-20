@@ -1,7 +1,6 @@
 <?php
 namespace Epikoder\LaravelPaymentGateway;
 
-use Epikoder\LaravelPaymentGateway\Classes\BasePaymentGateway;
 use Epikoder\LaravelPaymentGateway\Contracts\PaymentGatewayInterface;
 use Illuminate\Support\ServiceProvider;
 
@@ -19,5 +18,6 @@ class PaymentServiceProvider extends  ServiceProvider
     public function register()
     {
         $this->app->bind(PaymentGatewayInterface::class, BasePaymentGateway::class);
+        $this->loadRoutesFrom(realpath(__DIR__.'/../routes/routes.php'));
     }
 }

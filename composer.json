@@ -41,7 +41,7 @@
         },
         "laravel": {
             "providers": [
-                "Epikoder\\LaravelPaymentGateway\\GatewayServiceProvider"
+                "Epikoder\\LaravelPaymentGateway\\PaymentServiceProvider"
             ]
         }
     }

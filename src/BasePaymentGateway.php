@@ -43,8 +43,8 @@ class BasePaymentGateway implements PaymentGatewayInterface
         if (!$this->provider) throw new \LogicException("You need to set the provider, did you call init?");
 
         $this->provider->setOrder($order);
-        $result = new PaymentResult($this->provider, $order);
-        return $this->provider->process($result);
+        $this->provider->validate();
+        return $this->provider->process(new PaymentResult($this->provider, $order));
     }
 
     public function providerById(string $id): PaymentProvider
