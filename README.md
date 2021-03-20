@@ -25,4 +25,4 @@ implement the abstract function.
 
 example will be available soon.
 
-To manage the providers use the `GatewayManager`
+To manage the providers use the `PaymentService`
