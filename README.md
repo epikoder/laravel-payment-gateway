@@ -31,7 +31,7 @@ To manage the providers use the `PaymentService`
 #### Add a provider
 ```
  "providers" => [
-    'paystack' =>                       \Epikoder\LaravelPaymentGateway\Gateways\Paystack::class,
+    'paystack' => \Epikoder\LaravelPaymentGateway\Gateways\Paystack::class,
  ],
 ```
 ## Usage
