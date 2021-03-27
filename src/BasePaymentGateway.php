@@ -3,7 +3,9 @@
 namespace Epikoder\LaravelPaymentGateway;
 
 use Epikoder\LaravelPaymentGateway\Abstracts\PaymentProvider;
+use Epikoder\LaravelPaymentGateway\Contracts\OrderInterface;
 use Epikoder\LaravelPaymentGateway\Contracts\PaymentGatewayInterface;
+use Illuminate\Support\Str;
 
 class BasePaymentGateway implements PaymentGatewayInterface
 {
@@ -22,7 +24,7 @@ class BasePaymentGateway implements PaymentGatewayInterface
     public function registerProvider(PaymentProvider $paymentProvider): PaymentProvider
     {
         if (array_key_exists($paymentProvider->identifier(), $this->providers)) {
-            throw new \LogicException("Duplicate provider in entry: {$paymentProvider->identifier()}");
+            throw new \Exception("Duplicate provider in entry: {$paymentProvider->identifier()}");
         }
         $this->providers[$paymentProvider->identifier()] = $paymentProvider;
         return $paymentProvider;
@@ -30,20 +32,21 @@ class BasePaymentGateway implements PaymentGatewayInterface
 
     public function init(string $paymentProvider, array $data)
     {
-        if (!isset($this->providers[$paymentProvider]) && !in_array($paymentProvider, config("gateway.disabled"))) {
-            throw new \LogicException(sprintf("The selected provider does not exist: %s", $paymentProvider));
+        if (!isset($this->providers[$paymentProvider]) && in_array($paymentProvider, config("gateway.disabled"))) {
+            throw new \Exception(sprintf("The selected provider does not exist: %s", $paymentProvider));
         }
         /** @var PaymentProvider */
         $this->provider = $this->providers[$paymentProvider];
         $this->provider->setData($data);
     }
 
-    public function process($order): PaymentResult
+    public function process(OrderInterface $order): PaymentResult
     {
         if (!$this->provider) throw new \LogicException("You need to set the provider, did you call init?");
 
         $this->provider->setOrder($order);
         $this->provider->validate();
+        session([config("gateway.payment_id") => Str::random(16)]);
         return $this->provider->process(new PaymentResult($this->provider, $order));
     }
 

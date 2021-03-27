@@ -3,6 +3,7 @@
 namespace Epikoder\LaravelPaymentGateway;
 
 use Epikoder\LaravelPaymentGateway\Abstracts\PaymentProvider;
+use Epikoder\LaravelPaymentGateway\Contracts\OrderInterface;
 use Epikoder\LaravelPaymentGateway\Contracts\PaymentGatewayInterface;
 use Epikoder\LaravelPaymentGateway\Exceptions\PaymentGatewayException;
 use Illuminate\Contracts\Foundation\Application;
@@ -64,21 +65,27 @@ class PaymentService
         return $this->allProviders;
     }
 
-    public function init(string $paymentMethod, array $data)
+    public function init(string $provider, array $data)
     {
-        $this->gateway->init($paymentMethod, $data);
+        $this->gateway->init($provider, $data);
         return $this;
     }
 
-    public function process($order)
+    public function process(OrderInterface $order)
     {
         try {
             $result = $this->gateway->process($order);
         } catch (\Throwable $e) {
+            if (config("app.debug")) throw $e;
             $result = new PaymentResult($this->gateway->activeProvider(), $order);
             return $result->fail($this->gateway->activeProvider()->data(), $e);
         }
 
         return $this->paymentRedirector->handlePaymentResult($result);
+    }
+
+    public function complete()
+    {
+        $this->paymentRedirector->handleOffSiteReturn();
     }
 }

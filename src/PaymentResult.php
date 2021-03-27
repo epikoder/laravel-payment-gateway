@@ -2,6 +2,7 @@
 namespace Epikoder\LaravelPaymentGateway;
 
 use Epikoder\LaravelPaymentGateway\Abstracts\PaymentProvider;
+use Epikoder\LaravelPaymentGateway\Contracts\OrderInterface;
 
 class PaymentResult
 {
@@ -31,7 +32,7 @@ class PaymentResult
 
     /**
      * The order that is being processed.
-     *
+     * @var OrderInterface
      */
     public $order;
 
@@ -47,7 +48,7 @@ class PaymentResult
      */
     public $provider;
 
-    public function __construct(PaymentProvider $provider, $order)
+    public function __construct(PaymentProvider $provider, OrderInterface $order)
     {
         $this->provider   = $provider;
         $this->order      = $order;
@@ -88,19 +89,10 @@ class PaymentResult
         return $this;
     }
 
-    /**
-     * The payment was successful.
-     *
-     * The payment is logged, associated with the order
-     * and the order is marked as paid.
-     *
-     * @param array $data
-     * @param       $response
-     *
-     * @return PaymentResult
-     */
-    public function pending(array $data, $response): self
+    public function redirect(string $string)
     {
+        $this->redirect = true;
+        $this->redirectUrl = $string;
         return $this;
     }
 }

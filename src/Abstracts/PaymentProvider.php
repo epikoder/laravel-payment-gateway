@@ -2,15 +2,16 @@
 
 namespace Epikoder\LaravelPaymentGateway\Abstracts;
 
-use Epikoder\LaravelPaymentGateway\Contracts\PaymentOrder;
+use Epikoder\LaravelPaymentGateway\Contracts\OrderInterface;
 use Epikoder\LaravelPaymentGateway\PaymentResult;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Validation\ValidationException;
 
 abstract class PaymentProvider
 {
     /**
      * Order been paid for
-     * @var PaymentOrder
+     * @var OrderInterface|Model
      */
     protected $order;
 
@@ -20,7 +21,7 @@ abstract class PaymentProvider
      */
     protected $data;
 
-    public function __construct($order = null, array $data = null)
+    public function __construct(OrderInterface $order = null, array $data = null)
     {
         $this->order = $order ?: null;
         $this->data = $data ?: null;
@@ -39,7 +40,18 @@ abstract class PaymentProvider
     /**
      * Get provider logo url
      */
-    abstract public function imageUrl() : string;
+    abstract public function imageUrl(): string;
+
+    public function currency(): string
+    {
+        return $this->settings()['currency'];
+    }
+
+    public function rate(): int
+    {
+        return config("gateway.rate");
+    }
+
 
     /**
      * Get provider settings
@@ -48,7 +60,7 @@ abstract class PaymentProvider
     {
         $mode = config("gateway.settings.{$this->identifier()}.mode");
         return $mode
-            ? config("gateway.settings.{$this->identifier()}.{$mode}}")
+            ? config("gateway.settings.{$this->identifier()}.{$mode}")
             : config("gateway.settings.{$this->identifier()}");
     }
 
@@ -62,21 +74,26 @@ abstract class PaymentProvider
     /**
      * Process payment
      */
-    abstract public function process(PaymentResult $paymentProviderResponse): PaymentResult;
+    abstract public function process(PaymentResult $paymentResult): PaymentResult;
+
+    /**
+     * Complete payment
+     */
+    abstract public function complete(PaymentResult $paymentResult): PaymentResult;
 
     public function returnUrl()
     {
-        return config("app.url") . config("gateway.returnUrl") . "?". http_build_query([
-            "return" => "return",
-            "payment_provider" => $this->identifier(),
+        return url('/') . '/' . config("gateway.returnUrl") . "?" . http_build_query([
+            "action" => "return",
+            config("gateway.payment_id") => $this->getPaymentId(),
         ]);
     }
 
     public function cancelUrl()
     {
-        return config("app.url") . config("gateway.returnUrl") . "?". http_build_query([
-            "return" => "cancel",
-            "payment_provider" => $this->identifier(),
+        return url('/') . '/' . config("gateway.returnUrl") . "?" . http_build_query([
+            "action" => "cancel",
+            config("gateway.payment_id") => $this->getPaymentId(),
         ]);
     }
 
@@ -96,9 +113,14 @@ abstract class PaymentProvider
         return $this->order();
     }
 
-    public function setOrder($order)
+    public function setOrder(OrderInterface $order)
     {
         $this->order = $order;
         return $this;
+    }
+
+    public function getPaymentId() : string
+    {
+        return session(config("gateway.payment_id"));
     }
 }

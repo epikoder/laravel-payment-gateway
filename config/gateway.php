@@ -1,7 +1,11 @@
 <?php
 
+use Epikoder\LaravelPaymentGateway\Currencies;
+
 return [
-    'providers' => [],
+    "providers" => [
+        'paystack' => \Epikoder\LaravelPaymentGateway\Gateways\Paystack::class,
+    ],
 
     /*
     |-------------------------------------------------------------------
@@ -16,16 +20,25 @@ return [
             'live' => [
                 'sk_key' => 'sk_test_6f220edf6029757d56079cb33b047a15da7b3bfd',
                 'pk_key' => 'pk_test_e8d8ffad357f6e7958b799ef96fb97965b13b959',
+                'currency' => Currencies::US_DOLLAR,
             ],
             'test' => [
                 'sk_key' => 'sk_test_6f220edf6029757d56079cb33b047a15da7b3bfd',
                 'pk_key' => 'pk_test_e8d8ffad357f6e7958b799ef96fb97965b13b959',
+                'currency' => Currencies::NAIRA,
             ],
             'channels' => [
                 'card', 'bank'
             ],
+            'image' => 'https://tukuz.com/wp-content/uploads/2020/10/paystack-logo-vector.png',
         ]
     ],
+
+    /**
+     * Global Currency settings
+     */
+    "currency" => Currencies::NAIRA,
+    "rate" => 1,
 
     /**
      * Disabled gateways
@@ -37,11 +50,19 @@ return [
     /**
      * Urls settings
      */
-    "returnUrl" => "checkout/response",
+    "returnUrl" => "checkout/success",
+    "responseUrl" => "checkout/response",
+
 
     /**
      * Save persistent changes to database
      */
     'persistent_settings' => true,
     'persistent_table' => 'payment_gateways',
+
+    /**
+     * Session keys
+     */
+    'payment_id' => 'gateway_payment_id',
+    'provider_callback' => 'gateway_provider_callback',
 ];

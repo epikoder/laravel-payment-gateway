@@ -17,7 +17,7 @@ interface PaymentGatewayInterface
     /**
      * Process the payment
      */
-    public function process($order): PaymentResult;
+    public function process(OrderInterface $order): PaymentResult;
 
     /**
      * Get specific provider
