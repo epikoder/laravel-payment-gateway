@@ -58,9 +58,6 @@ class PaymentResult
     /**
      * The payment was successful.
      *
-     * The payment is logged, associated with the order
-     * and the order is marked as paid.
-     *
      * @param array $data
      * @param       $response
      *
@@ -75,12 +72,8 @@ class PaymentResult
     /**
      * The payment was not successful.
      *
-     * The payment is logged, associated with the order
-     * and the order is marked as paid.
-     *
      * @param array $data
      * @param       $response
-     *
      * @return PaymentResult
      */
     public function fail(array $data, $response): self

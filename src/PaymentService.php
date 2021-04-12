@@ -5,7 +5,6 @@ namespace Epikoder\LaravelPaymentGateway;
 use Epikoder\LaravelPaymentGateway\Abstracts\PaymentProvider;
 use Epikoder\LaravelPaymentGateway\Contracts\OrderInterface;
 use Epikoder\LaravelPaymentGateway\Contracts\PaymentGatewayInterface;
-use Epikoder\LaravelPaymentGateway\Exceptions\PaymentGatewayException;
 use Illuminate\Contracts\Foundation\Application;
 
 class PaymentService
