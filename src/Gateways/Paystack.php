@@ -34,13 +34,11 @@ class Paystack extends PaymentProvider
 
     public function process(PaymentResult $paymentResult): PaymentResult
     {
-        /** @var \App\Models\User $user */
-        $user = Auth::user();
         $paystack = $this->initialize();
 
         try {
             $tranx = $paystack->transaction->initialize([
-                'email' => $user->email,
+                'email' => $this->data['email'],
                 'amount' => $this->order->amount() * $this->multiplier() * $this->rate(),
                 'callback_url' => $this->returnUrl(),
                 'meta' => json_encode($this->order->toArray()),
