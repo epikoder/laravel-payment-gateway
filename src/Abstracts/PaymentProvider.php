@@ -119,8 +119,15 @@ abstract class PaymentProvider
         return $this;
     }
 
-    public function getPaymentId() : string
+    public function getPaymentId(): string
     {
         return session(config("gateway.payment_id"));
+    }
+
+    public function setOffSiteValue(): void
+    {
+        /** Set the provider for the current session */
+        cache([config("gateway.provider_callback") => self::class], now()->addMinutes(30));
+        cache([$this->getPaymentId() => 'Id exist'], now()->addMinutes(30));
     }
 }

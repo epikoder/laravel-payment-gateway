@@ -49,8 +49,7 @@ class Paystack extends PaymentProvider
             throw $th;
         }
 
-        /** Set the provider for the current session */
-        session([config("gateway.provider_callback") => self::class]);
+        $this->setOffSiteValue();
         return $paymentResult->redirect($tranx->data->authorization_url);
     }
 
