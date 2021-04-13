@@ -127,7 +127,7 @@ abstract class PaymentProvider
     public function setOffSiteValue(): void
     {
         /** Set the provider for the current session */
-        cache([config("gateway.provider_callback") => self::class], now()->addMinutes(30));
+        cache([config("gateway.provider_callback") => $this->identifier()], now()->addMinutes(30));
         cache([$this->getPaymentId() => 'Id exist'], now()->addMinutes(30));
     }
 }

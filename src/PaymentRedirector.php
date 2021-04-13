@@ -28,10 +28,11 @@ class PaymentRedirector
     public function handleOffSiteReturn()
     {
         $payment_id_key = config("gateway.payment_id");
-        if (request()->$payment_id_key !== session()->get($payment_id_key)) {
-            dd('No payment id');
+        $payment_id = request()->$payment_id_key;
+        if ($payment_id && cache()->get($payment_id)) {
+            $class = cache()->get(config("gateway.provider_callback"));
+            $provider = new $class();
+            dd($provider);
         }
-
-        var_dump(session(config("gateway.provider_callback")));
     }
 }
