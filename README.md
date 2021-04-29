@@ -21,20 +21,83 @@ To add a payment provider extend the PaymentProvider class
 
 `Epikoder\LaravelPaymentGateway\Abstract\PaymentProvider`
 
-Implement
+### Order | Package model
 
-`Epikoder\LaravelPaymentGateway\Contracts\OrderInterface`
+Implement the interface `Epikoder\LaravelPaymentGateway\Contracts\OrderInterface`
+
+```
+class Order extends Model implements \Epikoder\LaravelPaymentGateway\Contracts\OrderInterface 
+{
+ // implements the required methods
+}
+```
 
 
-To manage the providers use the `PaymentService`
-## Config
+### Config
 #### Add a provider
 ```
  "providers" => [
     'paystack' => \Epikoder\LaravelPaymentGateway\Gateways\Paystack::class,
  ],
 ```
-## Usage
+
+To add or use your own custom provider see the config
+
+
+Add a provider setting
+```
+"settings" => [
+        "paystack" => [
+            'sk_key' => 'sk_test_6f220edf6029757d56079cb33b047a15da7b3bfd',
+                'pk_key' => 'pk_test_e8d8ffad357f6e7958b799ef96fb97965b13b959',
+                'currency' => Currencies::US_DOLLAR,
+            'channels' => [
+                'card', 'bank'
+            ],
+            'image' => 'https://tukuz.com/wp-content/uploads/2020/10/paystack-logo-vector.png',
+        ]
+    ],
+```
+
+#### Disable provider from customer access
+```
+'disabled' => ['stripe',],
+```
+
+#### Live and Test mode
+Using live and test mode feature
+
+```
+"settings" => [
+        "paystack" => [
+            "mode" => "test",
+            'live' => [
+                'sk_key' => 'sk_test_6f220edf6029757d56079cb33b047a15da7b3bfd',
+                'pk_key' => 'pk_test_e8d8ffad357f6e7958b799ef96fb97965b13b959',
+                'currency' => Currencies::US_DOLLAR,
+            ],
+            'test' => [
+                'sk_key' => 'sk_test_6f220edf6029757d56079cb33b047a15da7b3bfd',
+                'pk_key' => 'pk_test_e8d8ffad357f6e7958b799ef96fb97965b13b959',
+                'currency' => Currencies::NAIRA,
+            ],
+            'channels' => [
+                'card', 'bank'
+            ],
+            'image' => 'https://tukuz.com/wp-content/uploads/2020/10/paystack-logo-vector.png',
+        ]
+    ],
+```
+##### URLs and Routes
+The values of the urls should be valid routes to your controller see [Complete an order](#complete-an-order)
+
+```
+ "returnUrl" => 'checkout/success',   // offsite return url
+ "responseUrl" => "checkout/response",
+```
+
+### Usage
+
 #### Process an order
 ```
 ...
@@ -43,13 +106,81 @@ use Epikoder\LaravelPaymentGateway\PaymentService;
 {
     public function pay(PaymentService $paymentService)
     {
-        $res = $paymentService->init('provider', ['data needed to complete process'])
+        /** @var \Illuminate\Http\Response */
+        $res = $paymentService->init('provider', request()->user()->toArray)
             ->process(Order); // Order must implement order interface
-        
-        // $res is either a redirect or a normanl response from provider
-        return $res; 
+            
+        return $res;  // $res is either a redirect or provider response
     }
 }
 ```
 
-Disclaimer: This package is still under development do not use in production
+#### Complete an order 
+
+Simple method
+```
+class PayController extends \Epikoder\LaravelPaymentGateway\PaymentGatewayController {
+
+  public function response() // Handles normal response
+    {
+     $content = $this->responseData;
+     if (!$content) {
+      // No data
+     }
+     
+     return \Illuminate\Http\Response($content);
+    }
+    
+    
+ public function callbackResponse() // Handles off-site-response
+    {
+        $result = $this->paymentService->complete($this->provider);
+        if ($this->provider->identifier() == 'paystack) {
+            log_paystack_transactions($result);
+        }
+        
+        if (!$result->successful) {
+            return view('payment.success');
+        }
+        
+        return view('payment.error');
+    }
+}
+```
+
+Custom Method
+
+```
+{
+  public function response() // Handles normal response
+    {
+     $content = session()->pull(config("gateway.responseUrl"));
+     return \Illuminate\Http\Response($content);
+    }
+    
+    public function callbackResponse() // Handles off-site-response
+    {
+        $result = $this->paymentService->complete($this->paymentService->callbackProvider());
+        if ($result->provider->identifier() == 'paystack) {
+            log_paystack_transactions($result);
+        }
+        
+        if (!$result->successful) {
+            return view('payment.success');
+        }
+        
+        return view('payment.error');
+    }
+}
+
+```
+Transaction verification is handled by the PaymentProvider class.
+
+### Contributing
+
+Thank you for considering contributing to this package. :)
+
+
+### License
+
+The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
