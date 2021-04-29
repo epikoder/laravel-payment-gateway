@@ -140,10 +140,10 @@ class PayController extends \Epikoder\LaravelPaymentGateway\PaymentGatewayContro
         }
         
         if (!$result->successful) {
-            return view('payment.success');
+            return view('payment.error');
         }
         
-        return view('payment.error');
+        return view('payment.success');
     }
 }
 ```
@@ -166,10 +166,10 @@ class PayController extends \Epikoder\LaravelPaymentGateway\PaymentGatewayContro
         }
         
         if (!$result->successful) {
-            return view('payment.success');
+            return view('payment.error');
         }
         
-        return view('payment.error');
+        return view('payment.success');
     }
 }
 
