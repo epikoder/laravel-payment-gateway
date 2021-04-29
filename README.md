@@ -33,8 +33,8 @@ class Order extends Model implements \Epikoder\LaravelPaymentGateway\Contracts\O
 ```
 
 
-### Config
-#### Add a provider
+## Config
+### Add a provider
 ```
  "providers" => [
     'paystack' => \Epikoder\LaravelPaymentGateway\Gateways\Paystack::class,
@@ -59,12 +59,12 @@ Add a provider setting
     ],
 ```
 
-#### Disable provider from customer access
+### Disable provider from customer access
 ```
 'disabled' => ['stripe',],
 ```
 
-#### Live and Test mode
+### Live and Test mode
 Using live and test mode feature
 
 ```
@@ -88,7 +88,7 @@ Using live and test mode feature
         ]
     ],
 ```
-##### URLs and Routes
+### URLs and Routes
 The values of the urls should be valid routes to your controller see [Complete an order](#complete-an-order)
 
 ```
@@ -96,9 +96,9 @@ The values of the urls should be valid routes to your controller see [Complete a
  "responseUrl" => "checkout/response",
 ```
 
-### Usage
+## Usage
 
-#### Process an order
+### Process an order
 ```
 ...
 use Epikoder\LaravelPaymentGateway\PaymentService;
@@ -115,9 +115,9 @@ use Epikoder\LaravelPaymentGateway\PaymentService;
 }
 ```
 
-#### Complete an order 
+## Complete an order 
 
-Simple method
+### Simple method
 ```
 class PayController extends \Epikoder\LaravelPaymentGateway\PaymentGatewayController {
 
@@ -148,7 +148,7 @@ class PayController extends \Epikoder\LaravelPaymentGateway\PaymentGatewayContro
 }
 ```
 
-Custom Method
+### Custom Method
 
 ```
 {
@@ -176,11 +176,11 @@ Custom Method
 ```
 Transaction verification is handled by the PaymentProvider class.
 
-### Contributing
+## Contributing
 
 Thank you for considering contributing to this package. :)
 
 
-### License
+## License
 
 The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
