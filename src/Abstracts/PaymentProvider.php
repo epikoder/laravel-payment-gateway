@@ -108,15 +108,25 @@ abstract class PaymentProvider
         return $this;
     }
 
+    public function getDataFromSession() : array
+    {
+        return (cache()->get($this->callbackPaymentId()))['data'];
+    }
+
     public function order()
     {
-        return $this->order();
+        return $this->order;
     }
 
     public function setOrder(OrderInterface $order)
     {
         $this->order = $order;
         return $this;
+    }
+
+    public function getOrderFromSession() : OrderInterface
+    {
+        return (cache()->get($this->callbackPaymentId()))['order'];
     }
 
     public function getPaymentId(): string
@@ -127,7 +137,17 @@ abstract class PaymentProvider
     public function setOffSiteValue(): void
     {
         /** Set the provider for the current session */
-        cache([config("gateway.provider_callback") => config("gateway.providers.{$this->identifier()}")], now()->addMinutes(30));
-        cache([$this->getPaymentId() => 'Id exist'], now()->addMinutes(30));
+        cache([config("gateway.provider_callback") => config("gateway.providers.{$this->identifier()}")],
+         now()->addMinutes(30));
+        cache([$this->getPaymentId() => [
+            'order' => $this->order(),
+            'data' => $this->data(),
+        ]], now()->addMinutes(30));
+    }
+
+    public function callbackPaymentId(): ?string
+    {
+        $payment_id_key = config("gateway.payment_id");
+        return request()->$payment_id_key;
     }
 }

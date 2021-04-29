@@ -18,6 +18,5 @@ class PaymentServiceProvider extends  ServiceProvider
     public function register()
     {
         $this->app->bind(PaymentGatewayInterface::class, BasePaymentGateway::class);
-        $this->loadRoutesFrom(realpath(__DIR__.'/../routes/routes.php'));
     }
 }

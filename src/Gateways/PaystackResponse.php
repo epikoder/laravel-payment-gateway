@@ -39,7 +39,7 @@ class PaystackResponse
 
     function isSuccessful(): bool
     {
-        return utf8_encode($this->status);
+        return utf8_encode($this->status) && $this->data->status == 'success';
     }
 
     function getMessage(): string
@@ -50,5 +50,15 @@ class PaystackResponse
     function getCode(): int
     {
         return ($this->data->status == 'success') ? 200 : 400;
+    }
+
+    function getReference () : String
+    {
+        return $this->data->reference;
+    }
+
+    function getAmount () : int
+    {
+        return $this->data->amount;
     }
 }

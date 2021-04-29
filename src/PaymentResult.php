@@ -1,4 +1,5 @@
 <?php
+
 namespace Epikoder\LaravelPaymentGateway;
 
 use Epikoder\LaravelPaymentGateway\Abstracts\PaymentProvider;
@@ -19,22 +20,24 @@ class PaymentResult
     public $redirect = false;
 
     /**
-     * Use this response as redirect.
      * @var \Illuminate\Http\Response
      */
     public $redirectResponse;
 
+    public $paymentResponse;
+
     /**
-     * Redirect the user to this URL.
+     * Redirect user to this URL.
      * @var string
      */
     public $redirectUrl = '';
 
     /**
-     * The order that is being processed.
      * @var OrderInterface
      */
     public $order;
+
+    public $data;
 
     /**
      * Error message in case of a failure.
@@ -63,9 +66,11 @@ class PaymentResult
      *
      * @return PaymentResult
      */
-    public function success(array $data, $response): self
+    public function success(array $data, $paymentResponse): self
     {
         $this->successful = true;
+        $this->data = $data;
+        $this->paymentResponse = $paymentResponse;
         return $this;
     }
 
@@ -76,13 +81,15 @@ class PaymentResult
      * @param       $response
      * @return PaymentResult
      */
-    public function fail(array $data, $response): self
+    public function fail(array $data, $paymentResponse): self
     {
         $this->successful = false;
+        $this->data = $data;
+        $this->paymentResponse = $paymentResponse;
         return $this;
     }
 
-    public function redirect(string $string)
+    public function redirect(string $string): self
     {
         $this->redirect = true;
         $this->redirectUrl = $string;

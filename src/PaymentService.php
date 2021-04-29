@@ -5,6 +5,7 @@ namespace Epikoder\LaravelPaymentGateway;
 use Epikoder\LaravelPaymentGateway\Abstracts\PaymentProvider;
 use Epikoder\LaravelPaymentGateway\Contracts\OrderInterface;
 use Epikoder\LaravelPaymentGateway\Contracts\PaymentGatewayInterface;
+use Epikoder\LaravelPaymentGateway\Exceptions\PaymentGatewayException;
 use Illuminate\Contracts\Foundation\Application;
 
 class PaymentService
@@ -83,8 +84,22 @@ class PaymentService
         return $this->paymentRedirector->handlePaymentResult($result);
     }
 
-    public function complete()
+    public function complete(PaymentProvider $provider): PaymentResult
     {
-        $this->paymentRedirector->handleOffSiteReturn();
+        return $this->paymentRedirector->handleOffSiteReturn($provider);
+    }
+
+    public function callbackProvider(): PaymentProvider
+    {
+        $payment_id_key = config("gateway.payment_id");
+        $payment_id = request()->$payment_id_key;
+        $class = cache()->get(config("gateway.provider_callback"));
+        if ($payment_id && cache()->get($payment_id) && $class) {
+            /** @var \Epikoder\LaravelPaymentGateway\Abstracts\PaymentProvider */
+            $provider = new $class();
+            return $provider;
+        } else {
+            throw new PaymentGatewayException('Provider class not found');
+        }
     }
 }

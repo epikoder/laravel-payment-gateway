@@ -37,6 +37,8 @@ class BasePaymentGateway implements PaymentGatewayInterface
         }
         /** @var PaymentProvider */
         $this->provider = $this->providers[$paymentProvider];
+
+        session([config("gateway.payment_id") => Str::random(16)]);
         $this->provider->setData($data);
     }
 
@@ -46,8 +48,11 @@ class BasePaymentGateway implements PaymentGatewayInterface
 
         $this->provider->setOrder($order);
         $this->provider->validate();
-        session([config("gateway.payment_id") => Str::random(16)]);
-        return $this->provider->process(new PaymentResult($this->provider, $order));
+        $result =  $this->provider->process(new PaymentResult($this->provider, $order));
+        if ($result->redirect && $result->redirectUrl) {
+            $this->provider->setOffSiteValue();
+        }
+        return $result;
     }
 
     public function providerById(string $id): PaymentProvider

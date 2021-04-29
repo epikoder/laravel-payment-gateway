@@ -41,7 +41,7 @@ class Paystack extends PaymentProvider
                 'email' => $this->data['email'],
                 'amount' => $this->order->amount() * $this->multiplier() * $this->rate(),
                 'callback_url' => $this->returnUrl(),
-                'meta' => json_encode($this->order->toArray()),
+                'meta' => ['order' => json_encode($this->order->toArray())],
                 'channels' => config("gateway.settings.{$this->identifier()}.channels"),
                 'currency' => $this->currency(),
             ]);
@@ -49,7 +49,6 @@ class Paystack extends PaymentProvider
             throw $th;
         }
 
-        $this->setOffSiteValue();
         return $paymentResult->redirect($tranx->data->authorization_url);
     }
 
@@ -64,11 +63,18 @@ class Paystack extends PaymentProvider
 
         $paystack = $this->initialize();
         try {
-            $tranx = $paystack->transaction->verify($ref);
+            $tranx = $paystack->transaction->verify([
+                'reference' => $ref,
+            ]);
         } catch (\Throwable $e) {
             throw $e;
         }
-        return $paymentResult->success($this->data, new \Illuminate\Http\Response());
+
+        $response = new PaystackResponse($tranx);
+        if (!$response->isSuccessful()) {
+            return $paymentResult->fail($this->getDataFromSession(), $response);
+        }
+        return $paymentResult->success($this->getDataFromSession(), $response);
     }
 
     public function initialize(): \Yabacon\Paystack

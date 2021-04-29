@@ -49,8 +49,11 @@ return [
 
     /**
      * Urls settings
+     *
+     * Edit the routes to actual routes available
+     * in your application
      */
-    "returnUrl" => "checkout/success",
+    "returnUrl" => 'checkout/success',
     "responseUrl" => "checkout/response",
 
 
