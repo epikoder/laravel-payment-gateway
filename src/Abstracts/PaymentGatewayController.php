@@ -1,6 +1,8 @@
 <?php
-namespace Epikoder\LaravelPaymentGateway;
 
+namespace Epikoder\LaravelPaymentGateway\Abstracts;
+
+use Epikoder\LaravelPaymentGateway\PaymentService;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Foundation\Validation\ValidatesRequests;
@@ -19,8 +21,11 @@ abstract class PaymentGatewayController extends \Illuminate\Routing\Controller
     public function __construct(PaymentService $paymentService)
     {
         $this->paymentService = $paymentService;
-        $this->provider = strpos(request()->url(), config('gateway.returnUrl')) ? $paymentService->callbackProvider() : null;
         $this->responseData = session(config("gateway.responseUrl"));
+
+        if (strpos(request()->url(), config('gateway.returnUrl'))) {
+            $this->provider = $paymentService->callbackProvider();
+        }
     }
     abstract public function response();
     abstract public function callbackResponse();
