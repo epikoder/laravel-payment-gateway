@@ -20,7 +20,9 @@
             "role": "Developer"
         }
     ],
-    "require": {},
+    "require": {
+        "yabacon/paystack-php": "^2.2"
+    },
     "require-dev": {},
     "autoload": {
         "psr-4": {
