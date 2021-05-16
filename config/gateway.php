@@ -18,14 +18,12 @@ return [
         "paystack" => [
             "mode" => "test",
             'live' => [
-                'sk_key' => 'sk_test_6f220edf6029757d56079cb33b047a15da7b3bfd',
-                'pk_key' => 'pk_test_e8d8ffad357f6e7958b799ef96fb97965b13b959',
+                'sk_key' => 'sk_test_shdjkhdj827391nV4Lid',
                 'currency' => Currencies::US_DOLLAR,
             ],
             'test' => [
-                'sk_key' => 'sk_test_6f220edf6029757d56079cb33b047a15da7b3bfd',
-                'pk_key' => 'pk_test_e8d8ffad357f6e7958b799ef96fb97965b13b959',
-                'currency' => Currencies::NAIRA,
+                'sk_key' => 'sk_test_shdjkhdj827391nV4Lid',
+                'currency' => Currencies::US_DOLLAR,
             ],
             'channels' => [
                 'card', 'bank'
@@ -37,7 +35,7 @@ return [
     /**
      * Global Currency settings
      */
-    "currency" => Currencies::NAIRA,
+    "currency" => Currencies::US_DOLLAR,
     "rate" => 1,
 
     /**
@@ -56,16 +54,9 @@ return [
     "returnUrl" => 'checkout/success',
     "responseUrl" => "checkout/response",
 
-
-    /**
-     * Save persistent changes to database
-     */
-    'persistent_settings' => true,
-    'persistent_table' => 'payment_gateways',
-
     /**
      * Session keys
      */
-    'payment_id' => 'gateway_payment_id',
-    'provider_callback' => 'gateway_provider_callback',
+    'payment_id' => 'test_payment_id',
+    'provider_callback' => 'test_provider',
 ];
