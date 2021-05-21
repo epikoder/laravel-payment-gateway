@@ -3,7 +3,7 @@
 #### Extendable payment gateway to manage different gateways in your application.
 
 This package allows you to manage different payment providers within your application with ease.
-and provides base to add any payment provider on-the-fly.
+and provides base to add any payment provider on-the-fly. see [live demo](https://lpg-demo.herokuapp.com)
 
 ### Default providers to be implemented
 
