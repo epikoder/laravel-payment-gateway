@@ -38,7 +38,7 @@ class PaymentService
             /** @var PaymentProvider $provider */
             $provider = new $class;
             $this->gateway->registerProvider($provider);
-            if (!in_array($provider->identifier(), config("gateway.disabled"))) {
+            if (count(config("gateway.disabled")) == 0 || !in_array($provider->identifier(), config("gateway.disabled"))) {
                 $this->providers[$provider->identifier()] = ['name' => $provider->name(), 'image' => $provider->imageUrl()];
             }
             $this->allProviders[$provider->identifier()] = $provider->name();
